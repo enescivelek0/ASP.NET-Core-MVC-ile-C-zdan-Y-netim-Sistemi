@@ -1,0 +1,102 @@
+﻿@{
+    ViewData["Title"] = "Cüzdan Yönetimi";
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Cüzdan Yönetimi</h1>
+
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <h3>Cüzdan Oluştur</h3>
+                <button id="createWalletBtn" class="btn btn-primary">Cüzdan Oluştur</button>
+                <div id="walletInfo" class="mt-3"></div>
+            </div>
+
+            <div class="col-md-6">
+                <h3>Para Transferi</h3>
+                <form id="transferForm">
+                    <div class="form-group">
+                        <label for="fromWalletId">Gönderen Cüzdan ID</label>
+                        <input type="text" class="form-control" id="fromWalletId" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="toWalletId">Alıcı Cüzdan ID</label>
+                        <input type="text" class="form-control" id="toWalletId" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="amount">Miktar</label>
+                        <input type="number" class="form-control" id="amount" required>
+                    </div>
+                    <button type="submit" class="btn btn-success">Transfer Yap</button>
+                </form>
+                <div id="transferResult" class="mt-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS ve Bağımlılıkları -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Cüzdan Oluşturma
+        document.getElementById('createWalletBtn').addEventListener('click', function () {
+            fetch('/Wallet/CreateWallet', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('walletInfo').innerHTML = `
+                        <div class="alert alert-success">
+                            <strong>Cüzdan Oluşturuldu!</strong><br>
+                            ID: ${data.id}<br>
+                            Bakiye: ${data.balance}
+                        </div>
+                    `;
+                });
+        });
+
+        // Para Transferi
+        document.getElementById('transferForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const fromWalletId = document.getElementById('fromWalletId').value;
+            const toWalletId = document.getElementById('toWalletId').value;
+            const amount = document.getElementById('amount').value;
+
+            fetch('/Wallet/Transfer', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    fromWalletId: fromWalletId,
+                    toWalletId: toWalletId,
+                    amount: parseFloat(amount)
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('transferResult').innerHTML = `
+                    <div class="alert alert-info">
+                        ${data}
+                    </div>
+                `;
+            })
+            .catch(error => {
+                document.getElementById('transferResult').innerHTML = `
+                    <div class="alert alert-danger">
+                        Transfer başarısız: ${error.message}
+                    </div>
+                `;
+            });
+        });
+    </script>
+</body>
+</html>

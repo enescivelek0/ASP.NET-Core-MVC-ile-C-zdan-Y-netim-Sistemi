@@ -1,0 +1,62 @@
+﻿@{
+    ViewData["Title"] = "Cüzdan Bakiye Sorgulama";
+}
+
+<div class="container mt-5">
+    <h1 class="text-center">Cüzdan Bakiye Sorgulama</h1>
+
+    <div class="row justify-content-center mt-4">
+        <div class="col-md-6">
+            <form id="checkBalanceForm">
+                <div class="form-group">
+                    <label for="walletId">Cüzdan ID</label>
+                    <input type="text" class="form-control" id="walletId" required>
+                </div>
+                <button type="submit" class="btn btn-primary mt-3">Bakiye Sorgula</button>
+            </form>
+            <div id="balanceResult" class="mt-3"></div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Bakiye sorgulama formu
+                document.getElementById('checkBalanceForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const walletId = document.getElementById('walletId').value;
+
+            fetch('/Wallet/GetBalance', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(walletId) // JSON formatında gönder
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('balanceResult').innerHTML = `
+                        <div class="alert alert-success">
+                            <strong>Bakiye:</strong> ${data.balance}
+                        </div>
+                    `;
+                } else {
+                    document.getElementById('balanceResult').innerHTML = `
+                        <div class="alert alert-danger">
+                            ${data.message}
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                document.getElementById('balanceResult').innerHTML = `
+                    <div class="alert alert-danger">
+                        Sorgulama sırasında bir hata oluştu: ${error.message}
+                    </div>
+                `;
+            });
+        });
+    </script>
+}
