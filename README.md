@@ -1,4 +1,5 @@
-https://github.com/user-attachments/assets/7c7da926-ad0e-487f-8a6e-dc765c0c5d06
+Video Link: https://github.com/user-attachments/assets/7c7da926-ad0e-487f-8a6e-dc765c0c5d06
+
 ASP.NET Core MVC ile Cüzdan Yönetim Sistemi
 
 Açıklama:
